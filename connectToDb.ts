@@ -1,6 +1,7 @@
-import 'dotenv/config';
+import dotenv from 'dotenv';
 import { MongoClient } from 'mongodb';
 
+dotenv.config();
 
 const mongodb_username = process.env.MONGODB_USERNAME as string;
 const mongodb_password = process.env.MONGODB_PASSWORD as string; 

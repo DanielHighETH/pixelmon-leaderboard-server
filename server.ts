@@ -1,8 +1,10 @@
-import 'dotenv/config';
+import dotenv from 'dotenv';
 import express from 'express';
 import axios from 'axios';
 import cron from 'node-cron';
 import connectToDB, {database} from './connectToDb';
+
+dotenv.config();
 
 const app = express();
 const port = 3000;
@@ -24,14 +26,26 @@ async function downloadData(nftType: string, tokenId: number) {
         const relicsResponse = response.data.result.response.relicsResponse;
         const totalCount = response.data.result.totalCount;
 
-        if(totalCount === 0 || totalCount === null) {
+        if (totalCount === 0 || totalCount === null) {
             console.log(`No data for ${nftType} with ID ${tokenId}`);
             return null;
         }
 
-        // Saving to MongoDB
+        // Updating or inserting data in MongoDB
         const collection = database.collection(nftType);
-        await collection.insertOne({ nftType, tokenId, relicsResponse, totalCount });
+        const updateResult = await collection.updateOne(
+            { nftType, tokenId }, 
+            { $set: { relicsResponse, totalCount } }, 
+            { upsert: true }
+        );
+
+        if (updateResult.upsertedCount > 0) {
+            console.log(`Inserted new data for ${nftType} with ID ${tokenId}`);
+        } else if (updateResult.modifiedCount > 0) {
+            console.log(`Updated existing data for ${nftType} with ID ${tokenId}`);
+        } else {
+            console.log(`No changes for ${nftType} with ID ${tokenId}`);
+        }
 
         return { relicsResponse, totalCount };
     } catch (error) {
@@ -40,14 +54,20 @@ async function downloadData(nftType: string, tokenId: number) {
     }
 }
 
-
 async function downloadForType(nftType: string, maxId: number) {
     for (let i = 0; i <= maxId; i++) {
         console.log(`Downloading ${nftType} with ID ${i}`);
         await downloadData(nftType, i);
+
+        // Every 100 downloads, wait for 20 seconds
+        if (i % 100 === 0 && i !== 0) {
+            console.log(`Waiting 20 seconds after ${i} downloads...`);
+            await new Promise(resolve => setTimeout(resolve, 20000));
+        }
     }
 }
 
+//TODO: change to 24 hours
 cron.schedule('0 0,12 * * *', () => {
     console.log('Running cron job for pixelmon');
     downloadForType('pixelmon', pixelmonMaxId as number);
