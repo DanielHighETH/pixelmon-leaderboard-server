@@ -22,9 +22,17 @@ async function downloadData(nftType: string, tokenId: number) {
             tokenId: tokenId
         });
 
-        // Extracting relicsResponse and totalCount
+        // Extracting data from response
         const relicsResponse = response.data.result.response.relicsResponse;
         const totalCount = response.data.result.totalCount;
+        const imageUrl = response.data.result.response.metadata.imageUrl;
+        const name = response.data.result.response.metadata.name;
+        const tribe = response.data.result.response.metadata.tribe;
+        const rarity = response.data.result.response.metadata.rarity;
+        let evolution = null;
+        if(nftType === 'pixelmon') {
+            evolution = response.data.result.response.metadata.evolution;
+        }
 
         if (totalCount === 0 || totalCount === null) {
             console.log(`No data for ${nftType} with ID ${tokenId}`);
@@ -35,7 +43,7 @@ async function downloadData(nftType: string, tokenId: number) {
         const collection = database.collection(nftType);
         const updateResult = await collection.updateOne(
             { nftType, tokenId }, 
-            { $set: { relicsResponse, totalCount } }, 
+            { $set: { relicsResponse, totalCount, imageUrl, name, tribe, rarity, evolution } }, 
             { upsert: true }
         );
 
@@ -47,7 +55,7 @@ async function downloadData(nftType: string, tokenId: number) {
             console.log(`No changes for ${nftType} with ID ${tokenId}`);
         }
 
-        return { relicsResponse, totalCount };
+        return { relicsResponse, totalCount, imageUrl, name, tribe, rarity, evolution };
     } catch (error) {
         console.error(`Error downloading data for ${nftType} with ID ${tokenId}:`, error);
         return null;
