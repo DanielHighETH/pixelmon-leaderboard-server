@@ -67,14 +67,14 @@ async function downloadForType(nftType: string, maxId: number) {
     }
 }
 
-//TODO: change to 24 hours
-cron.schedule('0 0,12 * * *', () => {
+cron.schedule('0 0 * * *', () => {
     console.log('Running cron job for pixelmon');
     downloadForType('pixelmon', pixelmonMaxId as number);
 
     console.log('Running cron job for trainer');
     downloadForType('trainer', trainerMaxId as number);
 });
+
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
