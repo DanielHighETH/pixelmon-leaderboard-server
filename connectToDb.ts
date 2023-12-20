@@ -1,12 +1,14 @@
+import 'dotenv/config';
 import { MongoClient } from 'mongodb';
 
 
-const mongo_uri = 'mongodb+srv://danielhigheth:<password>@leaderboard.a004ccl.mongodb.net/?retryWrites=true&w=majority'
+const mongodb_username = process.env.MONGODB_USERNAME as string;
+const mongodb_password = process.env.MONGODB_PASSWORD as string; 
+const mongodb_uri = `mongodb+srv://${mongodb_username}:${mongodb_password}@leaderboard.a004ccl.mongodb.net/?retryWrites=true&w=majority`
 
-const uri = "mongodb+srv://danielhigheth:<password>@leaderboard.a004ccl.mongodb.net/?retryWrites=true&w=majority"; // Replace with your MongoDB URI
-const client = new MongoClient(uri);
+const client = new MongoClient(mongodb_uri);
 
-async function connectDB() {
+async function connectToDB() {
     try {
         await client.connect();
         console.log("Connected to MongoDB");
@@ -15,6 +17,6 @@ async function connectDB() {
     }
 }
 
-export const database = client.db("yourDatabaseName"); // Replace with your database name
+export const database = client.db("leaderboard");
 
-export default connectDB;
+export default connectToDB;

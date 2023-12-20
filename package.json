@@ -18,5 +18,8 @@
     "mongodb": "^6.3.0",
     "node-cron": "^3.0.3",
     "typescript": "^5.3.3"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2"
   }
 }
