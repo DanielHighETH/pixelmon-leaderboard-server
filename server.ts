@@ -87,9 +87,9 @@ cron.schedule('0 0 * * *', () => {
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 
-    console.log('Initiating download for pixelmon');
-    downloadForType('pixelmon', pixelmonMaxId as number);
+    // console.log('Initiating download for pixelmon');
+    // downloadForType('pixelmon', pixelmonMaxId as number);
 
-    console.log('Initiating download for trainer');
-    downloadForType('trainer', trainerMaxId as number);
+    // console.log('Initiating download for trainer');
+    // downloadForType('trainer', trainerMaxId as number);
 });
